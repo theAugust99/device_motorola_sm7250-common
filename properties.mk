@@ -4,6 +4,8 @@
 
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
+    aaudio.mmap_exclusive_policy=2 \
+    aaudio.mmap_policy=2 \
     af.fast_track_multiplier=2 \
     audio.deep_buffer.media=true \
     audio.offload.video=true \
