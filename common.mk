@@ -200,10 +200,6 @@ PRODUCT_PACKAGES += \
     com.quicinc.cne \
     services-ext
 
-# Config Store
-PRODUCT_PACKAGES += \
-    disable_configstore
-
 # Common init scripts
 PRODUCT_PACKAGES += \
     fstab.qcom \
