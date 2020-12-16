@@ -306,6 +306,10 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
     persist.vendor.sensors.enable.mag_filter=true
 
+# Shutdown
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.shutdown_timeout=2
+
 # Time
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.delta_time.enable=true
