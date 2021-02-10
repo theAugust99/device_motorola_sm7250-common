@@ -93,7 +93,6 @@ on post-fs
     mkdir /mnt/vendor/persist/factory/wlan 0755 oem_5004 oem_5004
     mkdir /mnt/vendor/persist/factory/regulatory 0755 oem_5004 system
     mkdir /mnt/vendor/persist/public 0755 oem_5004 oem_5004
-    mkdir /persist/public/atvc 0770 mot_atvc shell
     mkdir /mnt/vendor/persist/public/att_dm 0775 radio oem_5004
     mkdir /mnt/vendor/persist/public/hiddenmenu 0775 radio oem_5004
     mkdir /mnt/vendor/persist/public/hiddenmenu/data 0775 system oem_5004
@@ -103,7 +102,6 @@ on post-fs
     mkdir /mnt/vendor/persist/wifi 0755 oem_5004 oem_5004
     mkdir /mnt/vendor/persist/bt 0755 oem_5004 bluetooth
     mkdir /persist/public/usc_dm 0775 radio radio
-    mkdir /persist/sds 0700 vold vold
     mkdir /mnt/vendor/persist/rfs/msm/mpss/mot_rfs 0771 vendor_rfs system
     mkdir /mnt/vendor/persist/rfs/mdm/mpss/mot_rfs 0771 vendor_rfs system
 
@@ -306,25 +304,43 @@ on boot
    chown audio audio /sys/kernel/aov/register
    chown audio audio /sys/kernel/aov/event
 
+   # Quiet binder logs
+   write /sys/module/binder/parameters/debug_mask 0x5
+
    # Clear cooldown state
    mkdir /mnt/vendor/persist/chargeonly 0770 system system
    write /mnt/vendor/persist/chargeonly/cooldown n
    chown system system /mnt/vendor/persist/chargeonly/cooldown
    chmod 0660 /mnt/vendor/persist/chargeonly/cooldown
 
-on late-fs-charger
-    class_start early_hal
-    wait_for_prop hwservicemanager.ready true
-    exec_start wait_for_keymaster
-    mount_all /vendor/etc/fstab.qcom --late
-    # Boot time fs tune
-    write /sys/block/dm-9/queue/read_ahead_kb 2048
+service vendor.mmi-block-perm /vendor/bin/init.mmi.block_perm.sh
+    class main
+    user root
+    oneshot
+
+service vendor.pstore_annotate /vendor/bin/pstore_annotate.sh build
+    class main
+    user system
+    group log
+    oneshot
+
+service vendor.apanic_copy /vendor/bin/apanic_copy.sh
+    class late_start
+    group log
+    oneshot
+    disabled
+
+service vendor.bl_logs_copy /vendor/bin/apanic_copy.sh -i
+    class late_start
+    group log
+    oneshot
+    disabled
 
 on charger
     trigger early-fs
     trigger fs
     trigger post-fs
-    trigger late-fs-charger
+    trigger late-fs
     trigger post-fs-data
     trigger moto-charger
     class_stop main
@@ -384,7 +400,6 @@ on property:vendor.hw.touch.status="ready"
 service vendor.charge_only_mode /vendor/bin/charge_only_mode
     user root
     group graphics system input
-    capabilities SYS_BOOT
     disabled
 
 service vendor.thermal-com /vendor/bin/thermal-engine --minimode
@@ -403,11 +418,14 @@ on property:vendor.wifi.tethering=false
 on property:vendor.wifi.tethering=true
     write /sys/module/wlan/parameters/sar_mhs enabled
 
-# Override the AOSP sensor HAL service definition to add input group access
-service vendor.sensors-hal-1-0 /vendor/bin/hw/android.hardware.sensors@1.0-service
+# Override the AOSP sensor HAL service definition
+# from hardware/interfaces/sensors/2.0/multihal
+# to add input and uhid group access
+service vendor.sensors-hal-2-0-multihal /vendor/bin/hw/android.hardware.sensors@2.0-service.multihal
     class hal
     user system
-    group system input uhid wakelock
+    group system wakelock context_hub input uhid
+    writepid /dev/cpuset/system-background/tasks
     capabilities BLOCK_SUSPEND
     rlimit rtprio 10 10
 

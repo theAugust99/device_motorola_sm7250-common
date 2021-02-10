@@ -52,7 +52,7 @@ on early-fs
 
 on fs
     start hwservicemanager
-    mount_all /vendor/etc/fstab.qcom --early
+    mount_all --early
     chown root system /mnt/vendor/persist
     chmod 0771 /mnt/vendor/persist
     restorecon_recursive /mnt/vendor/persist
@@ -64,15 +64,8 @@ on post-fs
 
 on late-fs
     wait_for_prop hwservicemanager.ready true
-
-    # Start services for bootanim
-    start surfaceflinger
-    start bootanim
-    start vendor.qti.hardware.display.composer
-    start vendor.qti.hardware.display.allocator
-
     exec_start wait_for_keymaster
-    mount_all /vendor/etc/fstab.qcom --late
+    mount_all --late
     # Boot time fs tune
     write /sys/block/dm-9/queue/read_ahead_kb 2048
 
@@ -105,6 +98,12 @@ on boot
 #Load WLAN driver
     insmod /vendor/lib/modules/qca_cld3_wlan.ko
 
+on property:vendor.display.lcd_density=560
+   setprop dalvik.vm.heapgrowthlimit 256m
+
+on property:vendor.display.lcd_density=640
+   setprop dalvik.vm.heapgrowthlimit 512m
+
 on boot && property:persist.vendor.usb.controller.default=*
     setprop vendor.usb.controller ${persist.vendor.usb.controller.default}
 
@@ -135,6 +134,11 @@ service vendor.per_proxy /vendor/bin/pm-proxy
     group system
     disabled
 
+service vendor.mdm_helper /vendor/bin/mdm_helper
+    class core
+    group system wakelock
+    disabled
+
 service vendor.mdm_launcher /vendor/bin/sh /vendor/bin/init.mdm.sh
     class core
     oneshot
@@ -144,3 +148,27 @@ on property:init.svc.vendor.per_mgr=running
 
 on property:sys.shutdown.requested=*
     stop vendor.per_proxy
+
+on property:vendor.vold.post_fs_data_done=1 && property:ro.debuggable=1
+   start vendor.wlan_logging
+
+on property:vendor.vold.post_fs_data_done=1 && property:persist.wlan.debug_log=1
+   start vendor.wlan_logging
+
+service vendor.wlan_logging /system/vendor/bin/cnss_diag -q -f -t HELIUM
+   class main
+   user system
+   group system wifi inet sdcard_rw media_rw diag
+   oneshot
+   disabled
+
+service dcvs-sh /vendor/bin/init.qti.dcvs.sh
+    class late_start
+    user root
+    group root system
+    disabled
+    oneshot
+
+on property:vendor.dcvs.prop=1
+   start dcvs-sh
+

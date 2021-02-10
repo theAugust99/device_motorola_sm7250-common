@@ -206,6 +206,7 @@ PRODUCT_PACKAGES += \
     init.class_main.sh \
     init.crda.sh \
     init.mdm.sh \
+    init.mmi.charge_only.rc \
     init.mmi.chipset.rc \
     init.mmi.rc \
     init.mmi.touch.sh \
@@ -226,6 +227,9 @@ PRODUCT_PACKAGES += \
     init.qti.ims.sh \
     init.recovery.qcom.rc \
     init.target.rc \
+    init.vendor.sensors.rc \
+    vendor.sensors.qti.rc \
+    vendor.sensors.sscrpcd.rc \
     ueventd.qcom.rc
 
 PRODUCT_COPY_FILES += \
