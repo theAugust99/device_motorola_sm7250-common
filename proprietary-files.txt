@@ -873,7 +873,8 @@ vendor/radio/qcril_database/upgrade/20_version_qcrildb.sql
 system_ext/framework/qti-telephony-common.jar|96154b2576114dd566bbc99a2d9af612de8849df
 
 # Radio - IMS (APK)
--system_ext/priv-app/ims/ims.apk|dd3f4d2c372487fd9cfabb8d87484f7887216974
+-system_ext/priv-app/ims/ims.apk|61a632c8e5cbcc4e7d112d4a30abc805f31c1d59
+-system_ext/framework/qcom-moto-telephony-ext.jar|44c4e2d92af58a322bb98dd3feba105cca7ebd7b
 
 # Radio - IMS
 -system_ext/app/uceShimService/uceShimService.apk
