@@ -468,8 +468,9 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.servicetracker@1.1.vendor
 
 # Soong namespaces
-QCOM_SOONG_NAMESPACE := $(LOCAL_PATH)
+QCOM_SOONG_NAMESPACE := hardware/qcom-caf/sm8250
 PRODUCT_SOONG_NAMESPACES += \
+    $(LOCAL_PATH) \
     hardware/google/interfaces \
     hardware/google/pixel
 
