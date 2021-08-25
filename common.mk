@@ -146,8 +146,10 @@ PRODUCT_PACKAGES += \
     libtinycompress \
     libtinycompress.vendor
 
+ifneq (,$(filter %nairo %racer %smith, $(TARGET_PRODUCT)))
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
+endif
 
 PRODUCT_COPY_FILES += \
     frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
