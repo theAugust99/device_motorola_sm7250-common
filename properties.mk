@@ -2,6 +2,10 @@
 # Properties for sm7250
 #
 
+# ADB - Early
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.boot.adb_early=1
+
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
     af.fast_track_multiplier=2 \
