@@ -23,4 +23,7 @@
   <string name="config_batteryRemainingCapacityNode">/sys/class/power_supply/bms/charge_full</string>
   <string name="config_batteryDesignCapacityNode">/sys/class/power_supply/bms/charge_full_design</string>
 
+    <!-- Whether to show min/max refresh rate in display settings -->
+    <bool name="config_show_refresh_rate_controls">true</bool>
+
 </resources>
